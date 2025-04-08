@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Bar } from "@/widgets/Bar";
 import styled from "styled-components";
 import Graph from "@/entities/graph/ui/Graph";
@@ -9,6 +10,10 @@ import { Checkbox } from "primereact/checkbox";
 import { Menu } from "primereact/menu";
 import { useRef } from "react";
 import { MenuItem } from "primereact/menuitem";
+import { Mark } from "@/shared/ui/Mark";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedHostId } from "@/entities/hosts/model/hostsSlice";
+import { fetchPlantUML } from "@/entities/hosts/api/fetchPUML";
 
 const Container = styled.div`
   height: 100vh;
@@ -47,9 +52,25 @@ const ButtonGroup = styled.div`
   align-items: center;
 `;
 
+const Legend = styled.div`
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  z-index: 100;
+`;
+
 export const GraphPage = () => {
   const { t } = useTranslation();
   const menuRef = useRef<Menu>(null);
+  const dispatch = useDispatch();
+
+  // Получаем selectedHostId из Redux
+  const selectedHostId = useSelector(
+    (state: any) => state.hosts.selectedHostId
+  );
 
   const priorityOptions = [
     { name: t("content.load_h"), value: "high" },
@@ -70,7 +91,7 @@ export const GraphPage = () => {
     {
       label: "PlantUML",
       icon: "pi pi-receipt",
-      command: () => handleExport("plantuml"),
+      command: () => handleExportPlantUML(),
     },
   ];
 
@@ -79,11 +100,27 @@ export const GraphPage = () => {
     // Здесь будет ваша логика экспорта
   };
 
+  // Обработчик для кнопки "Очистить"
+  const handleClear = () => {
+    dispatch(setSelectedHostId(null)); // Устанавливаем selectedHostId в null
+  };
+
+  const handleExportPlantUML = async () => {
+    try {
+      await fetchPlantUML(selectedHostId || undefined); // Если selectedHostId отсутствует, передаем undefined
+    } catch (error) {
+      console.error("Failed to export PlantUML:", error);
+    }
+  };
+
   return (
     <Container>
       <Bar />
       <Content>
+        {/* Заголовок */}
         <Title>{t("content.title")}</Title>
+
+        {/* Группа кнопок */}
         <ButtonGroup>
           <Checkbox
             inputId="ingredient1"
@@ -100,13 +137,15 @@ export const GraphPage = () => {
             showClear
             placeholder={t("content.load")}
           />
+          {/* Кнопка "Очистить" */}
           <Button
             label={t("content.clear")}
             icon="pi pi-filter-slash"
+            onClick={handleClear} // Добавляем обработчик
             style={{
               backgroundColor: "#fff",
-              border: "1px solid #E6E6E7",
-              color: "#C5C5C5",
+              border: "1px solid #ced4da",
+              color: "#6c757d",
               borderRadius: "5px",
               height: "40px",
             }}
@@ -127,6 +166,14 @@ export const GraphPage = () => {
           />
         </ButtonGroup>
 
+        {/* Легенда */}
+        <Legend>
+          <Mark title={t("content.host")} color="#000000" />
+          <Mark title={t("content.network")} color="#00AA00" />
+          <Mark title={t("content.container")} color="#72b8ff" />
+        </Legend>
+
+        {/* Тепловая карта и граф */}
         <HeatMap />
         <Graph />
       </Content>

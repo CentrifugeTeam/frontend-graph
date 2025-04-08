@@ -6,9 +6,10 @@ export interface Container {
   image: string; // Образ контейнера
   container_id: string; // ID контейнера
   status: string; // Статус контейнера
+  packets_number: number; // Количество пакетов, обработанных контейнером
   ip: string; // IP-адрес контейнера
-  created_at: string; // Время создания контейнера
-  last_active: string; // Время последней активности
+  created_at: string; // Время создания контейнера (ISO формат)
+  last_active: string; // Время последней активности (ISO формат)
   id: number; // Уникальный ID контейнера
 }
 
@@ -40,9 +41,14 @@ export interface ApiResponse {
   links: GraphLink[]; // Массив связей
 }
 
-export const fetchGraphData = async (): Promise<ApiResponse> => {
+export const fetchGraphData = async (
+  host_id?: string
+): Promise<ApiResponse> => {
   try {
-    const url = `/graph`;
+    // Формируем URL с учетом query-параметра host_id
+    const url = `/graph${
+      host_id ? `?host_id=${encodeURIComponent(host_id)}` : ""
+    }`;
     const response = await api.get<ApiResponse>(url);
     return response.data;
   } catch (error) {

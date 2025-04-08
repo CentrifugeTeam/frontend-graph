@@ -8,6 +8,9 @@
     "export": "Export",
     "heat_map": "Traffic heat map",
     "error": "Error loading graph data",
-    "dead_notes": "Dead notes"
+    "dead_notes": "Dead notes",
+    "host": "Host",
+    "network": "Network",
+    "container": "Container"
   }
 }
