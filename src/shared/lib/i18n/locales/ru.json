@@ -11,6 +11,14 @@
     "dead_notes": "Мертвые ноды",
     "host": "Хост",
     "network": "Сеть",
-    "container": "Контейнер"
+    "container": "Контейнер",
+    "display_name": " Отображаемое имя",
+    "enter_display_name": "Введите отображаемое имя",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "name": "Имя",
+    "status": "Статус",
+    "image": "Образ"
   }
 }

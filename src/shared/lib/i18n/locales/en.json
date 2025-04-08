@@ -11,6 +11,14 @@
     "dead_notes": "Dead notes",
     "host": "Host",
     "network": "Network",
-    "container": "Container"
+    "container": "Container",
+    "display_name": "Display name",
+    "enter_display_name": "Enter display name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "name": "Name",
+    "status": "Status",
+    "image": "Image"
   }
 }

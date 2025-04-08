@@ -11,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { patchResource } from "@/entities/hosts/api/patchHosts";
+import { deleteContainer } from "../api/deleteContainers";
 
 const GraphContainer = styled.div`
   flex: 1;
@@ -178,16 +179,18 @@ const Graph = () => {
   const getNodeTooltip = useCallback(
     (node: any) => {
       const commentObj = comments.find((c) => c.nodeId === node.id);
-      let tooltip = `<div style="white-space: pre-line">Имя: ${node.name}`;
+      let tooltip = `<div style="white-space: pre-line">${t("content.name")}: ${
+        node.name
+      }`;
       if (commentObj?.comment)
-        tooltip += `\nОтображаемое имя: ${commentObj.comment}`;
+        tooltip += `\n${t("content.display_name")}: ${commentObj.comment}`;
       if (node.ip) tooltip += `\nIP: ${node.ip}`;
-      if (node.status) tooltip += `\nСтатус: ${node.status}`;
-      if (node.image) tooltip += `\nОбраз: ${node.image}`;
+      if (node.status) tooltip += `\n${t("content.status")}: ${node.status}`;
+      if (node.image) tooltip += `\n${t("content.image")}: ${node.image}`;
       tooltip += `</div>`;
       return tooltip;
     },
-    [comments]
+    [comments, t]
   );
 
   const handleNodeClick = useCallback(
@@ -320,23 +323,52 @@ const Graph = () => {
 
       {/* Ваш компонент Dialog для комментариев */}
       <Dialog
-        header={`Отображаемое имя ${selectedNode?.name || "ноды"}`}
+        header={`${t("content.display_name")} ${selectedNode?.name || "ноды"}`}
         visible={commentDialogVisible}
         style={{ width: "50vw" }}
         onHide={() => setCommentDialogVisible(false)}
         footer={
-          <div>
-            <Button onClick={() => setCommentDialogVisible(false)}>
-              Отмена
-            </Button>
-            <Button onClick={handleSaveComment}>Сохранить</Button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "1rem",
+            }}
+          >
+            {selectedNode?.type === "container" && (
+              <Button
+                label="Удалить"
+                severity="danger"
+                onClick={async () => {
+                  try {
+                    const containerId = selectedNode.id.replace(
+                      "container-",
+                      ""
+                    );
+                    await deleteContainer(containerId);
+                    setCommentDialogVisible(false);
+                    await queryClient.invalidateQueries({
+                      queryKey: ["graphData", selectedHostId],
+                    });
+                  } catch (error) {
+                    console.error("Ошибка при удалении контейнера:", error);
+                  }
+                }}
+              />
+            )}
+            <div>
+              <Button onClick={() => setCommentDialogVisible(false)}>
+                {t("content.cancel")}
+              </Button>
+              <Button onClick={handleSaveComment}>{t("content.save")}</Button>
+            </div>
           </div>
         }
       >
         <InputText
           value={currentComment}
           onChange={(e) => setCurrentComment(e.target.value)}
-          placeholder="Введите отображаемое имя"
+          placeholder={t("content.enter_display_name")}
           style={{ width: "100%" }}
         />
       </Dialog>

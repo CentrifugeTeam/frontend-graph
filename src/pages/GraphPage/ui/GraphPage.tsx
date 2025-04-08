@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedHostId } from "@/entities/hosts/model/hostsSlice";
 import { fetchPlantUML } from "@/entities/hosts/api/fetchPUML";
 import { fetchJSON } from "@/entities/hosts/api/fetchJSON";
+import { fetchPNG } from "@/entities/hosts/api/fetchPNG";
 
 const Container = styled.div`
   height: 100vh;
@@ -82,7 +83,7 @@ export const GraphPage = () => {
     {
       label: "PNG",
       icon: "pi pi-image",
-      command: () => handleExport("png"),
+      command: () => handleExportPNG(),
     },
     {
       label: "JSON",
@@ -95,11 +96,6 @@ export const GraphPage = () => {
       command: () => handleExportPlantUML(),
     },
   ];
-
-  const handleExport = (format: string) => {
-    console.log(`Exporting as ${format}`);
-    // Здесь будет ваша логика экспорта
-  };
 
   // Обработчик для кнопки "Очистить"
   const handleClear = () => {
@@ -117,7 +113,15 @@ export const GraphPage = () => {
     try {
       await fetchJSON(selectedHostId || undefined); // Если selectedHostId отсутствует, передаем undefined
     } catch (error) {
-      console.error("Failed to export PlantUML:", error);
+      console.error("Failed to export JSON:", error);
+    }
+  };
+
+  const handleExportPNG = async () => {
+    try {
+      await fetchPNG(selectedHostId || undefined); // Если selectedHostId отсутствует, передаем undefined
+    } catch (error) {
+      console.error("Failed to export PNG:", error);
     }
   };
 
