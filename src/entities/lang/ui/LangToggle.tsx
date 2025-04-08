@@ -16,7 +16,7 @@ const LangToggle: React.FC = () => {
       style={{
         width: "30px",
         height: "28px",
-        backgroundColor: "#0004ff",
+        backgroundColor: "#000000",
         color: "#fff",
         borderRadius: "5px",
         border: 0,

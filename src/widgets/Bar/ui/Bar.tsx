@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import styled from "styled-components";
 import { Hosts } from "@/entities/hosts/ui/Hosts";
 import LangToggle from "@/entities/lang/ui/LangToggle";
+import { useGraphWebSocket } from "@/entities/hosts/api/fetchHosts";
 
 const Container = styled.div<{ $collapsed: boolean }>`
   z-index: 1000;
@@ -55,9 +56,25 @@ const StyledButton = styled(Button)<{ $isSelected?: boolean }>`
   }
 `;
 
+const DataContainer = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 200px;
+  border: 1px solid #e6e6e7;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+`;
+
 export const Bar = () => {
   const [selectedButton, setSelectedButton] = useState<string | null>("bars");
   const [collapsed, setCollapsed] = useState(false);
+
+  // Подключаемся к WebSocket
+  const { data, error, isLoading } = useGraphWebSocket(
+    "ws://158.160.47.155/graph/stream"
+  );
 
   const handleButtonClick = (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -111,6 +128,22 @@ export const Bar = () => {
         <LangToggle />
       </ButtonContainer>
       {!collapsed && <Hosts />}
+      {/* Отображаем данные из WebSocket */}
+      {!collapsed && (
+        <DataContainer>
+          {isLoading && <div>Loading...</div>}
+          {error && <div>Error: {error}</div>}
+          {data.length > 0 && (
+            <ul>
+              {data.map((item, index) => (
+                <li key={index}>
+                  <pre>{JSON.stringify(item, null, 2)}</pre>
+                </li>
+              ))}
+            </ul>
+          )}
+        </DataContainer>
+      )}
     </Container>
   );
 };
