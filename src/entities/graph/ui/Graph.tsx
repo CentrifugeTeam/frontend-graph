@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from "react";
 import ForceGraph2D from "react-force-graph-2d";
 import styled from "styled-components";
@@ -65,25 +66,76 @@ const Graph = () => {
     );
   }
 
+  // Преобразование данных в формат для графа
   const graphData = {
-    nodes:
-      data?.nodes.map((node) => ({
-        id: node.id,
-        name: node.name,
-        image: node.image,
-        status: node.status,
+    nodes: [
+      ...(data?.nodes?.map((node) => ({
+        id: `host-${node.id}`,
+        name: node.hostname,
+        type: "host",
         ip: node.ip,
-        created_at: node.created_at,
-      })) || [],
-    links:
-      data?.links.flatMap((link) =>
-        link.target_ids.map((targetId) => ({
-          source: link.source_id,
-          target: targetId,
-          color: "#0000FF",
-          width: 2,
+      })) ?? []),
+      ...(data?.nodes?.flatMap((node) =>
+        node.networks.map((network) => ({
+          id: `network-${network.id}`,
+          name: network.name,
+          type: "network",
+          parentId: `host-${node.id}`,
         }))
-      ) || [],
+      ) ?? []),
+      ...(data?.nodes?.flatMap((node) =>
+        node.networks.flatMap((network) =>
+          network.containers.map((container) => ({
+            id: `container-${container.id}`,
+            name: container.name,
+            type: "container",
+            image: container.image,
+            status: container.status,
+            ip: container.ip,
+            created_at: container.created_at,
+            parentId: `network-${network.id}`,
+          }))
+        )
+      ) ?? []),
+    ],
+    links: [
+      ...(data?.links?.map((link) => ({
+        source: `host-${link.source_id}`,
+        target: `host-${link.target_id}`,
+        color: "#0000FF",
+        width: 2,
+      })) ?? []),
+      ...(data?.nodes?.flatMap((node) =>
+        node.networks.map((network) => ({
+          source: `host-${node.id}`,
+          target: `network-${network.id}`,
+          color: "#00AA00",
+          width: 1,
+        }))
+      ) ?? []),
+      ...(data?.nodes?.flatMap((node) =>
+        node.networks.flatMap((network) =>
+          network.containers.map((container) => ({
+            source: `network-${network.id}`,
+            target: `container-${container.id}`,
+            color: "#FF0000",
+            width: 1,
+          }))
+        )
+      ) ?? []),
+    ],
+  };
+  const getNodeColor = (node: any) => {
+    switch (node.type) {
+      case "host":
+        return "#000000";
+      case "network":
+        return "#00AA00";
+      case "container":
+        return "#72b8ff";
+      default:
+        return "#888888";
+    }
   };
 
   return (
@@ -91,22 +143,20 @@ const Graph = () => {
       <ForceGraph2D
         graphData={graphData}
         nodeLabel="name"
-        nodeAutoColorBy="id"
+        nodeAutoColorBy="type"
         width={dimensions.width}
         height={dimensions.height}
-        linkWidth={(link) => link.width}
-        linkColor={(link) => link.color}
+        linkWidth={(link: any) => link.width}
+        linkColor={(link: any) => link.color}
         backgroundColor="#FFFFFF"
-        nodeCanvasObject={(node, ctx, globalScale) => {
+        nodeCanvasObject={(node: any, ctx, globalScale) => {
           if (node.x === undefined || node.y === undefined) return;
 
-          // Всегда рисуем ноду
           ctx.beginPath();
           ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI, false);
-          ctx.fillStyle = "#db0000";
+          ctx.fillStyle = getNodeColor(node);
           ctx.fill();
 
-          // Рисуем текст только при достаточном масштабе
           if (globalScale >= 1.5) {
             const label = node.name;
             const fontSize = 12 / globalScale;
@@ -117,7 +167,7 @@ const Graph = () => {
             ctx.fillText(label, node.x, node.y + 8);
           }
         }}
-        nodePointerAreaPaint={(node, color, ctx) => {
+        nodePointerAreaPaint={(node: any, color, ctx) => {
           if (node.x === undefined || node.y === undefined) return;
           ctx.fillStyle = color;
           ctx.beginPath();

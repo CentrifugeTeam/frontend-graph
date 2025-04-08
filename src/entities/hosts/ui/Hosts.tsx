@@ -14,10 +14,12 @@ export const Hosts = () => {
         const hostsData = await fetchHosts();
         const formattedNodes = hostsData.map((host) => ({
           key: host.id,
-          label: `${host.hostname}`,
+          label: host.hostname,
+          // Сохраняем IP в данных узла
+          data: { ip: host.ip },
           children: host.networks.map((network) => ({
             key: `${host.id}-${network.id}`,
-            label: `${network.name} `,
+            label: network.name,
           })),
         }));
         setNodes(formattedNodes);
@@ -49,12 +51,16 @@ export const Hosts = () => {
       <ScrollPanel
         style={{
           width: "100%",
-          height: "100%", // Занимаем всю доступную высоту
+          height: "100%",
           flex: 1,
         }}
       >
         <Tree
           value={nodes}
+          nodeTemplate={(node) => (
+            // Отображаем IP из данных узла в title
+            <span title={node.data?.ip}>{node.label}</span>
+          )}
           style={{
             border: "none",
             fontSize: "10px",

@@ -128,7 +128,7 @@ export const GraphPage = () => {
         </ButtonGroup>
 
         <HeatMap />
-        {/* <Graph /> */}
+        <Graph />
       </Content>
     </Container>
   );
