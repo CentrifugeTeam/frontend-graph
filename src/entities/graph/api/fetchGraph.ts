@@ -2,54 +2,53 @@ import { api } from "@/shared/api/baseApi";
 
 // Интерфейс для контейнера
 export interface Container {
-  name: string; // Имя контейнера
-  image: string; // Образ контейнера
-  container_id: string; // ID контейнера
-  status: string; // Статус контейнера
-  packets_number: number; // Количество пакетов, обработанных контейнером
-  ip: string; // IP-адрес контейнера
-  created_at: string; // Время создания контейнера (ISO формат)
-  last_active: string; // Время последней активности (ISO формат)
-  id: number; // Уникальный ID контейнера
+  name: string;
+  image: string;
+  container_id: string;
   display_name: string;
+  status: string;
+  packets_number: number;
+  ip: string;
+  created_at: string; // ISO format
+  last_active: string; // ISO format
+  id: string;
 }
 
 // Интерфейс для сети
 export interface Network {
-  name: string; // Имя сети
-  network_id: string; // ID сети
+  name: string;
+  network_id: string;
   display_name: string;
-  id: number; // Уникальный ID сети
-  containers: Container[]; // Массив контейнеров в сети
-  packets_number: number; // Количество пакетов, обработанных контейнером
+  packets_number: number;
+  id: string;
+  containers: Container[];
 }
 
 // Интерфейс для узла графа (Node)
 export interface GraphNode {
-  hostname: string; // Имя хоста
+  hostname: string;
+  ip: string;
   display_name: string;
-  ip: string; // IP-адрес хоста
-  id: string; // Уникальный ID узла
-  networks: Network[]; // Массив сетей
+  id: string;
+  networks: Network[];
 }
 
 // Интерфейс для связи между узлами (Link)
 export interface GraphLink {
-  source_id: string; // ID исходного узла
-  target_id: string; // ID целевого узла
+  source_id: string;
+  target_id: string;
 }
 
 // Интерфейс для всего ответа API
 export interface ApiResponse {
-  nodes: GraphNode[]; // Массив узлов
-  links: GraphLink[]; // Массив связей
+  nodes: GraphNode[];
+  links: GraphLink[];
 }
 
 export const fetchGraphData = async (
   host_id?: string
 ): Promise<ApiResponse> => {
   try {
-    // Формируем URL с учетом query-параметра host_id
     const url = `/graph${
       host_id ? `?host_id=${encodeURIComponent(host_id)}` : ""
     }`;

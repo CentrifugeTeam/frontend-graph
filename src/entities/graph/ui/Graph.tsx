@@ -44,6 +44,7 @@ const Graph = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["graphData", selectedHostId],
     queryFn: () => fetchGraphData(selectedHostId || undefined),
+    refetchInterval: 60 * 1000, // обновлять данные каждые 60 секунд
   });
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const Graph = () => {
   const getLinkColorByPackets = useCallback((packetsNumber: number): string => {
     if (packetsNumber === 0) return "#808080";
     if (packetsNumber <= 100) return "#00FF00";
-    if (packetsNumber <= 1000) return "#FFFF00";
+    if (packetsNumber <= 1000) return "#ffae00";
     return "#FF0000";
   }, []);
 
@@ -129,19 +130,21 @@ const Graph = () => {
           ?.map((link) => ({
             source: `host-${link.source_id}`,
             target: `host-${link.target_id}`,
-            color: "#0000FF",
+            color: "#0000FF", // Цвет по умолчанию
             width: 4,
           })) ?? []),
+
         ...(data?.nodes
           ?.filter((node) => !selectedHostId || node.id === selectedHostId)
           ?.flatMap((node) =>
             node.networks.map((network) => ({
               source: `host-${node.id}`,
               target: `network-${network.id}`,
-              color: "#00AA00",
+              color: getLinkColorByPackets(network.packets_number),
               width: 4,
             }))
           ) ?? []),
+
         ...(data?.nodes
           ?.filter((node) => !selectedHostId || node.id === selectedHostId)
           ?.flatMap((node) =>
@@ -277,7 +280,7 @@ const Graph = () => {
     <>
       <GraphContainer ref={graphRef}>
         <MemoizedForceGraph
-          key={selectedHostId || "all"}
+          key={JSON.stringify(data)} // Используем данные как ключ для перерисовки
           graphData={graphData}
           nodeLabel={getNodeTooltip}
           nodeAutoColorBy="type"
@@ -315,6 +318,7 @@ const Graph = () => {
         />
       </GraphContainer>
 
+      {/* Ваш компонент Dialog для комментариев */}
       <Dialog
         header={`Комментарий для ${selectedNode?.name || "ноды"}`}
         visible={commentDialogVisible}

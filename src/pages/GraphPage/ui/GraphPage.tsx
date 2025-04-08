@@ -14,6 +14,7 @@ import { Mark } from "@/shared/ui/Mark";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedHostId } from "@/entities/hosts/model/hostsSlice";
 import { fetchPlantUML } from "@/entities/hosts/api/fetchPUML";
+import { fetchJSON } from "@/entities/hosts/api/fetchJSON";
 
 const Container = styled.div`
   height: 100vh;
@@ -86,7 +87,7 @@ export const GraphPage = () => {
     {
       label: "JSON",
       icon: "pi pi-list",
-      command: () => handleExport("json"),
+      command: () => handleExportJSON(),
     },
     {
       label: "PlantUML",
@@ -108,6 +109,13 @@ export const GraphPage = () => {
   const handleExportPlantUML = async () => {
     try {
       await fetchPlantUML(selectedHostId || undefined); // Если selectedHostId отсутствует, передаем undefined
+    } catch (error) {
+      console.error("Failed to export PlantUML:", error);
+    }
+  };
+  const handleExportJSON = async () => {
+    try {
+      await fetchJSON(selectedHostId || undefined); // Если selectedHostId отсутствует, передаем undefined
     } catch (error) {
       console.error("Failed to export PlantUML:", error);
     }
