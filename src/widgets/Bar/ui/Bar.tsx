@@ -3,6 +3,7 @@ import Logo from "@/shared/assets/Logo";
 import { Button } from "primereact/button";
 import styled from "styled-components";
 import { Hosts } from "@/entities/hosts/ui/Hosts";
+import LangToggle from "@/entities/lang/ui/LangToggle";
 
 const Container = styled.div<{ $collapsed: boolean }>`
   z-index: 1000;
@@ -107,8 +108,9 @@ export const Bar = () => {
             onClick={() => handleButtonClick("search")}
           />
         )}
+        <LangToggle />
       </ButtonContainer>
-      <Hosts />
+      {!collapsed && <Hosts />}
     </Container>
   );
 };

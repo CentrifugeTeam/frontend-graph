@@ -4,6 +4,11 @@ import Graph from "@/entities/graph/ui/Graph";
 import { Button } from "primereact/button";
 import { HeatMap } from "@/widgets/HeatMap";
 import { Dropdown } from "primereact/dropdown";
+import { useTranslation } from "react-i18next";
+import { Checkbox } from "primereact/checkbox";
+import { Menu } from "primereact/menu";
+import { useRef } from "react";
+import { MenuItem } from "primereact/menuitem";
 
 const Container = styled.div`
   height: 100vh;
@@ -38,27 +43,65 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
   z-index: 100;
+  display: flex;
+  align-items: center;
 `;
 
 export const GraphPage = () => {
+  const { t } = useTranslation();
+  const menuRef = useRef<Menu>(null);
+
   const priorityOptions = [
-    { name: "High", value: "high" },
-    { name: "Low", value: "low" },
+    { name: t("content.load_h"), value: "high" },
+    { name: t("content.load_l"), value: "low" },
   ];
+
+  const exportOptions: MenuItem[] = [
+    {
+      label: "PNG",
+      icon: "pi pi-image",
+      command: () => handleExport("png"),
+    },
+    {
+      label: "JSON",
+      icon: "pi pi-list",
+      command: () => handleExport("json"),
+    },
+    {
+      label: "PlantUML",
+      icon: "pi pi-receipt",
+      command: () => handleExport("plantuml"),
+    },
+  ];
+
+  const handleExport = (format: string) => {
+    console.log(`Exporting as ${format}`);
+    // Здесь будет ваша логика экспорта
+  };
+
   return (
     <Container>
       <Bar />
       <Content>
-        <Title>Containers</Title>
+        <Title>{t("content.title")}</Title>
         <ButtonGroup>
+          <Checkbox
+            inputId="ingredient1"
+            name="pizza"
+            value="Cheese"
+            checked={false}
+          />
+          <label style={{ marginRight: "15px" }} htmlFor="ingredient1">
+            {t("content.dead_notes")}
+          </label>
           <Dropdown
             options={priorityOptions}
             optionLabel="name"
             showClear
-            placeholder="Workload"
+            placeholder={t("content.load")}
           />
           <Button
-            label="Clear"
+            label={t("content.clear")}
             icon="pi pi-filter-slash"
             style={{
               backgroundColor: "#fff",
@@ -68,9 +111,13 @@ export const GraphPage = () => {
               height: "40px",
             }}
           />
+
+          {/* Кнопка с выпадающим меню экспорта */}
+          <Menu model={exportOptions} popup ref={menuRef} />
           <Button
-            label="Export"
+            label={t("content.export")}
             icon="pi pi-upload"
+            onClick={(e) => menuRef.current?.toggle(e)}
             style={{
               backgroundColor: "#f27638",
               color: "#fff",
@@ -81,7 +128,7 @@ export const GraphPage = () => {
         </ButtonGroup>
 
         <HeatMap />
-        <Graph />
+        {/* <Graph /> */}
       </Content>
     </Container>
   );

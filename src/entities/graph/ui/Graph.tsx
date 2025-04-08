@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { fetchGraphData } from "../api/fetchGraph";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { useTranslation } from "react-i18next";
 
 const GraphContainer = styled.div`
   flex: 1;
@@ -15,6 +16,7 @@ const GraphContainer = styled.div`
 const Graph = () => {
   const graphRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const { t } = useTranslation();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["graphData"],
@@ -51,7 +53,16 @@ const Graph = () => {
   }
 
   if (error) {
-    return <div>Error loading graph data: {error.message}</div>;
+    return (
+      <div
+        style={{
+          justifySelf: "center",
+          alignSelf: "center",
+        }}
+      >
+        {t("content.error")}: {error.message}
+      </div>
+    );
   }
 
   const graphData = {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -51,14 +52,16 @@ const Paragraph = styled.p`
 `;
 
 export const HeatMap = () => {
+  const { t } = useTranslation();
+
   return (
     <Container>
-      <Title>Traffic heat map</Title>
+      <Title>{t("content.heat_map")}</Title>
       <Block>
         <RedRound />
-        <Paragraph>High</Paragraph>
+        <Paragraph>{t("content.load_h")}</Paragraph>
         <GreenRound />
-        <Paragraph>Low</Paragraph>
+        <Paragraph>{t("content.load_l")}</Paragraph>
       </Block>
     </Container>
   );
