@@ -36,7 +36,7 @@ export const Hosts = () => {
   }, [dispatch]);
 
   if (loading) {
-    return <div>Loading hosts data...</div>;
+    return <div></div>;
   }
 
   // Обработчик выбора узла

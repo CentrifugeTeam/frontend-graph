@@ -320,7 +320,7 @@ const Graph = () => {
 
       {/* Ваш компонент Dialog для комментариев */}
       <Dialog
-        header={`Комментарий для ${selectedNode?.name || "ноды"}`}
+        header={`Отображаемое имя ${selectedNode?.name || "ноды"}`}
         visible={commentDialogVisible}
         style={{ width: "50vw" }}
         onHide={() => setCommentDialogVisible(false)}
@@ -336,7 +336,7 @@ const Graph = () => {
         <InputText
           value={currentComment}
           onChange={(e) => setCurrentComment(e.target.value)}
-          placeholder="Введите комментарий"
+          placeholder="Введите отображаемое имя"
           style={{ width: "100%" }}
         />
       </Dialog>
