@@ -11,19 +11,23 @@ export interface Container {
   created_at: string; // Время создания контейнера (ISO формат)
   last_active: string; // Время последней активности (ISO формат)
   id: number; // Уникальный ID контейнера
+  display_name: string;
 }
 
 // Интерфейс для сети
 export interface Network {
   name: string; // Имя сети
   network_id: string; // ID сети
+  display_name: string;
   id: number; // Уникальный ID сети
   containers: Container[]; // Массив контейнеров в сети
+  packets_number: number; // Количество пакетов, обработанных контейнером
 }
 
 // Интерфейс для узла графа (Node)
 export interface GraphNode {
   hostname: string; // Имя хоста
+  display_name: string;
   ip: string; // IP-адрес хоста
   id: string; // Уникальный ID узла
   networks: Network[]; // Массив сетей

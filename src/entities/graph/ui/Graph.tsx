@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback, memo } from "react";
 import ForceGraph2D from "react-force-graph-2d";
 import styled from "styled-components";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchGraphData } from "../api/fetchGraph";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useTranslation } from "react-i18next";
@@ -35,6 +35,7 @@ const Graph = () => {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [commentDialogVisible, setCommentDialogVisible] = useState(false);
   const [currentComment, setCurrentComment] = useState("");
+  const queryClient = useQueryClient();
 
   const selectedHostId = useSelector(
     (state: any) => state.hosts.selectedHostId
@@ -80,7 +81,8 @@ const Graph = () => {
           ?.filter((node) => !selectedHostId || node.id === selectedHostId)
           ?.map((node) => ({
             id: `host-${node.id}`,
-            name: node.hostname,
+            name: node.display_name || node.hostname,
+            display_name: node.display_name,
             type: "host",
             ip: node.ip,
           })) ?? []),
@@ -89,7 +91,8 @@ const Graph = () => {
           ?.flatMap((node) =>
             node.networks.map((network) => ({
               id: `network-${network.id}`,
-              name: network.name,
+              name: network.display_name || network.name,
+              display_name: network.display_name,
               type: "network",
               parentId: `host-${node.id}`,
             }))
@@ -100,7 +103,8 @@ const Graph = () => {
             node.networks.flatMap((network) =>
               network.containers.map((container) => ({
                 id: `container-${container.id}`,
-                name: container.name,
+                name: container.display_name || container.name,
+                display_name: container.display_name,
                 type: "container",
                 image: container.image,
                 status: container.status,
@@ -197,7 +201,6 @@ const Graph = () => {
     if (!selectedNode) return;
 
     try {
-      // Determine the resource type based on node type
       let resourceType: "hosts" | "networks" | "containers";
       switch (selectedNode.type) {
         case "host":
@@ -213,16 +216,13 @@ const Graph = () => {
           return;
       }
 
-      // Extract the ID by removing the prefix (e.g., "host-", "network-", etc.)
       const id = selectedNode.id.replace(/^(host|network|container)-/, "");
-
       const patchData = {
         display_name: currentComment.trim(),
       };
 
       await patchResource(resourceType, id, patchData);
 
-      // Update local comments state
       const updatedComments = comments.filter(
         (c) => c.nodeId !== selectedNode.id
       );
@@ -235,11 +235,16 @@ const Graph = () => {
 
       setComments(updatedComments);
       setCommentDialogVisible(false);
+
+      // 👉 invalidate query to refetch updated data
+      await queryClient.invalidateQueries({
+        queryKey: ["graphData", selectedHostId],
+      });
     } catch (error) {
       console.error("Failed to update node display name:", error);
-      // You might want to show an error message to the user here
     }
-  }, [selectedNode, comments, currentComment]);
+  }, [selectedNode, comments, currentComment, selectedHostId, queryClient]);
+
   if (isLoading) {
     return (
       <ProgressSpinner
@@ -291,7 +296,7 @@ const Graph = () => {
             ctx.fill();
 
             if (globalScale >= 1.5) {
-              const label = node.name;
+              const label = node.display_name || node.name;
               const fontSize = 12 / globalScale;
               ctx.font = `${fontSize}px Sans-Serif`;
               ctx.textAlign = "center";
