@@ -1,0 +1,75 @@
+{
+  "apptabbar": {
+    "title": "Search",
+    "offlineMessage": "Cannot update data. Check your internet connection.",
+    "reconnectingMessage": "Just a moment, loading..."
+  },
+  "searchinput": {
+    "placeholder": "Enter name, tag, email..."
+  },
+  "filtermodal": {
+    "title": "Sorting",
+    "byAlphabet": "By alphabet",
+    "byBirthday": "By date of birth"
+  },
+  "loadingindicator": {
+    "message": "Loading..."
+  },
+  "notfound": {
+    "title": "We didn't find anyone.",
+    "text": "Try to adjust your request"
+  },
+  "errorrefetch": {
+    "title": "Some superintelligence broke everything",
+    "text": "We'll try to fix it quickly",
+    "button": "Try again"
+  },
+  "departments": {
+    "all": "All",
+    "android": "Android",
+    "ios": "iOS",
+    "design": "Designers",
+    "management": "Managers",
+    "qa": "QA",
+    "back_office": "Back Office",
+    "frontend": "Frontend",
+    "hr": "HR",
+    "pr": "PR",
+    "backend": "Backend",
+    "support": "Support",
+    "analytics": "Analysts"
+  },
+  "months": {
+    "January": "January",
+    "February": "February",
+    "March": "March",
+    "April": "April",
+    "May": "May",
+    "June": "June",
+    "July": "July",
+    "August": "August",
+    "September": "September",
+    "October": "October",
+    "November": "November",
+    "December": "December"
+  },
+  "ageSuffixes": {
+    "year": "year",
+    "years": "years",
+    "years_plural": "years"
+  },
+  "month": {
+    "0": "Jan",
+    "1": "Feb",
+    "2": "Mar",
+    "3": "Apr",
+    "4": "May",
+    "5": "Jun",
+    "6": "Jul",
+    "7": "Aug",
+    "8": "Sep",
+    "9": "Oct",
+    "10": "Nov",
+    "11": "Dec"
+  }
+}

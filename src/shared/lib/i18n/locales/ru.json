@@ -1,0 +1,75 @@
+{
+  "apptabbar": {
+    "title": "Поиск",
+    "offlineMessage": "Не могу обновить данные. Проверь соединение с интернетом.",
+    "reconnectingMessage": "Секундочку, гружусь..."
+  },
+  "searchinput": {
+    "placeholder": "Введи имя, тег, почту..."
+  },
+  "filtermodal": {
+    "title": "Сортировка",
+    "byAlphabet": "По алфавиту",
+    "byBirthday": "По дате рождения"
+  },
+  "loadingindicator": {
+    "message": "Загрузка..."
+  },
+  "notfound": {
+    "title": "Мы никого не нашли",
+    "text": "Попробуй скорректировать запрос"
+  },
+  "errorrefetch": {
+    "title": "Какой-то сверхразум все сломал",
+    "text": "Постараемся быстро починить",
+    "button": "Попробовать снова"
+  },
+  "departments": {
+    "all": "Все",
+    "android": "Android",
+    "ios": "iOS",
+    "design": "Дизайн",
+    "management": "Менеджмент",
+    "qa": "QA",
+    "back_office": "Бэк-офис",
+    "frontend": "Frontend",
+    "hr": "HR",
+    "pr": "PR",
+    "backend": "Backend",
+    "support": "Техподдержка",
+    "analytics": "Аналитика"
+  },
+  "months": {
+    "January": "января",
+    "February": "февраля",
+    "March": "марта",
+    "April": "апреля",
+    "May": "мая",
+    "June": "июня",
+    "July": "июля",
+    "August": "августа",
+    "September": "сентября",
+    "October": "октября",
+    "November": "ноября",
+    "December": "декабря"
+  },
+  "ageSuffixes": {
+    "year": "год",
+    "years": "года",
+    "years_plural": "лет"
+  },
+  "month": {
+    "0": "янв",
+    "1": "фев",
+    "2": "мар",
+    "3": "апр",
+    "4": "май",
+    "5": "июн",
+    "6": "июл",
+    "7": "авг",
+    "8": "сен",
+    "9": "окт",
+    "10": "ноя",
+    "11": "дек"
+  }
+}
