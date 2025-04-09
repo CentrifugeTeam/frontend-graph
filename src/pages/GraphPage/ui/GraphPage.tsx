@@ -12,7 +12,10 @@ import { useRef } from "react";
 import { MenuItem } from "primereact/menuitem";
 import { Mark } from "@/shared/ui/Mark";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedHostId } from "@/entities/hosts/model/hostsSlice";
+import {
+  setIsDead,
+  setSelectedHostId,
+} from "@/entities/hosts/model/hostsSlice";
 import { fetchPlantUML } from "@/entities/hosts/api/fetchPUML";
 import { fetchJSON } from "@/entities/hosts/api/fetchJSON";
 import { fetchPNG } from "@/entities/hosts/api/fetchPNG";
@@ -68,6 +71,7 @@ export const GraphPage = () => {
   const { t } = useTranslation();
   const menuRef = useRef<Menu>(null);
   const dispatch = useDispatch();
+  const isDead = useSelector((state: any) => state.hosts.is_dead);
 
   // Получаем selectedHostId из Redux
   const selectedHostId = useSelector(
@@ -135,10 +139,14 @@ export const GraphPage = () => {
         {/* Группа кнопок */}
         <ButtonGroup>
           <Checkbox
-            inputId="ingredient1"
-            name="pizza"
-            value="Cheese"
-            checked={false}
+            inputId="deadCheckbox"
+            name="is_dead"
+            value="is_dead"
+            checked={isDead === true}
+            onChange={(e) => {
+              const newValue = e.checked ? true : null;
+              dispatch(setIsDead(newValue));
+            }}
           />
           <label style={{ marginRight: "15px" }} htmlFor="ingredient1">
             {t("content.dead_notes")}

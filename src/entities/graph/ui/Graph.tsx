@@ -38,14 +38,16 @@ const Graph = () => {
   const [currentComment, setCurrentComment] = useState("");
   const queryClient = useQueryClient();
 
+  const isDead = useSelector((state: any) => state.hosts.is_dead);
+
   const selectedHostId = useSelector(
     (state: any) => state.hosts.selectedHostId
   );
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["graphData", selectedHostId],
-    queryFn: () => fetchGraphData(selectedHostId || undefined),
-    refetchInterval: 60 * 1000, // обновлять данные каждые 60 секунд
+    queryKey: ["graphData", selectedHostId, isDead],
+    queryFn: () => fetchGraphData(selectedHostId || undefined, isDead),
+    refetchInterval: 60 * 1000,
   });
 
   useEffect(() => {

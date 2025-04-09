@@ -46,12 +46,21 @@ export interface ApiResponse {
 }
 
 export const fetchGraphData = async (
-  host_id?: string
+  host_id?: string,
+  is_dead?: boolean | null
 ): Promise<ApiResponse> => {
   try {
-    const url = `/graph${
-      host_id ? `?host_id=${encodeURIComponent(host_id)}` : ""
-    }`;
+    const params = new URLSearchParams();
+
+    if (host_id) {
+      params.append("host_id", host_id);
+    }
+
+    if (typeof is_dead === "boolean") {
+      params.append("is_dead", String(is_dead));
+    }
+
+    const url = `/graph${params.toString() ? `?${params.toString()}` : ""}`;
     const response = await api.get<ApiResponse>(url);
     return response.data;
   } catch (error) {
