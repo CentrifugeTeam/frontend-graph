@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Graph from "@/entities/graph/ui/Graph";
 import { Button } from "primereact/button";
 import { HeatMap } from "@/widgets/HeatMap";
-import { Dropdown } from "primereact/dropdown";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "primereact/checkbox";
 import { Menu } from "primereact/menu";
@@ -78,10 +77,10 @@ export const GraphPage = () => {
     (state: any) => state.hosts.selectedHostId
   );
 
-  const priorityOptions = [
-    { name: t("content.load_h"), value: "high" },
-    { name: t("content.load_l"), value: "low" },
-  ];
+  // const priorityOptions = [
+  //   { name: t("content.load_h"), value: "high" },
+  //   { name: t("content.load_l"), value: "low" },
+  // ];
 
   const exportOptions: MenuItem[] = [
     {
@@ -151,12 +150,12 @@ export const GraphPage = () => {
           <label style={{ marginRight: "15px" }} htmlFor="ingredient1">
             {t("content.dead_notes")}
           </label>
-          <Dropdown
+          {/* <Dropdown
             options={priorityOptions}
             optionLabel="name"
             showClear
             placeholder={t("content.load")}
-          />
+          /> */}
           {/* Кнопка "Очистить" */}
           <Button
             label={t("content.clear")}
