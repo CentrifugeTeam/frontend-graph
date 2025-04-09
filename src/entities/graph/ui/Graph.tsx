@@ -191,15 +191,40 @@ const Graph = () => {
       let tooltip = `<div style="white-space: pre-line">${t("content.name")}: ${
         node.name
       }`;
-      if (commentObj?.comment)
+
+      if (commentObj?.comment) {
         tooltip += `\n${t("content.display_name")}: ${commentObj.comment}`;
+      }
       if (node.ip) tooltip += `\nIP: ${node.ip}`;
       if (node.status) tooltip += `\n${t("content.status")}: ${node.status}`;
       if (node.image) tooltip += `\n${t("content.image")}: ${node.image}`;
+
+      // Add traffic information for containers
+      if (node.type === "container" && data) {
+        // Find the container in the original data
+        const containerId = node.id.replace("container-", "");
+        const container = data.nodes
+          .flatMap((node) => node.networks)
+          .flatMap((network) => network.containers)
+          .find((cont) => cont.id.toString() === containerId);
+
+        if (container?.traffic) {
+          tooltip += `\n\nПриходит из:`;
+          container.traffic.forEach((t) => {
+            tooltip += `\n - ${t.source || "N/A"}`;
+          });
+
+          tooltip += `\n\nОтправляется в:`;
+          container.traffic.forEach((t) => {
+            tooltip += `\n - ${t.destination || "N/A"}`;
+          });
+        }
+      }
+
       tooltip += `</div>`;
       return tooltip;
     },
-    [comments, t]
+    [comments, t, data]
   );
 
   const handleNodeClick = useCallback(
@@ -251,7 +276,6 @@ const Graph = () => {
       setComments(updatedComments);
       setCommentDialogVisible(false);
 
-      // 👉 invalidate query to refetch updated data
       await queryClient.invalidateQueries({
         queryKey: ["graphData", selectedHostId],
       });

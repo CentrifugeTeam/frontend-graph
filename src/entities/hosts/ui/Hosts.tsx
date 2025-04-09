@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { Tree } from "primereact/tree";
 import { TreeNode } from "primereact/treenode";
 import { ScrollPanel } from "primereact/scrollpanel";
+import { useQuery } from "@tanstack/react-query";
 import { fetchHosts } from "../api/fetchHosts";
-import { setLoading, setSelectedHostId } from "../model/hostsSlice";
+import { setSelectedHostId } from "../model/hostsSlice";
 
 interface HostsProps {
   searchValue: string;
@@ -13,45 +14,44 @@ interface HostsProps {
 
 export const Hosts = ({ searchValue }: HostsProps) => {
   const dispatch = useDispatch();
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [loading, setLoadingLocal] = useState(true);
 
-  useEffect(() => {
-    const loadHosts = async () => {
-      try {
-        dispatch(setLoading(true));
-        const hostsData = await fetchHosts();
-        const formattedNodes = hostsData.map((host: any) => {
-          const label = host.display_name || host.hostname; // display_name если есть, иначе hostname
-          return {
-            key: host.id,
-            label,
-            data: { ip: host.ip },
-            selectable: true,
-          };
-        });
-        setNodes(formattedNodes);
-      } catch (error) {
-        console.error("Error loading hosts:", error);
-      } finally {
-        setLoadingLocal(false);
-        dispatch(setLoading(false));
-      }
-    };
+  const {
+    data: hostsData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["hosts"],
+    queryFn: fetchHosts,
+    refetchInterval: 10000,
+  });
 
-    loadHosts();
-  }, [dispatch]);
+  const nodes: TreeNode[] = useMemo(() => {
+    if (!hostsData) return [];
 
-  if (loading) return <div />;
+    return hostsData.map((host: any) => {
+      const label = host.display_name || host.hostname;
+      return {
+        key: host.id,
+        label,
+        data: { ip: host.ip },
+        selectable: true,
+      };
+    });
+  }, [hostsData]);
+
+  const filteredNodes = useMemo(() => {
+    return nodes.filter((node) =>
+      node.label?.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [nodes, searchValue]);
 
   const handleNodeSelect = (node: TreeNode) => {
     const hostId = node.key?.toString() || null;
     dispatch(setSelectedHostId(hostId));
   };
 
-  const filteredNodes = nodes.filter((node) =>
-    node.label?.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  if (isLoading) return <div />;
+  if (error) return <div>Ошибка загрузки хостов</div>;
 
   return (
     <div

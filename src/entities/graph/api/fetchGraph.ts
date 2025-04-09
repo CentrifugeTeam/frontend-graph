@@ -11,7 +11,13 @@ export interface Container {
   ip: string;
   created_at: string; // ISO format
   last_active: string; // ISO format
+  traffic: Traffic[];
   id: string;
+}
+
+export interface Traffic {
+  destination: string;
+  source: string;
 }
 
 // Интерфейс для сети
