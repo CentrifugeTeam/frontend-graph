@@ -39,10 +39,17 @@ export interface GraphLink {
   target_id: string;
 }
 
+// Интерфейс для связи между сетями
+export interface NetworkToNetwork {
+  source_id: string;
+  target_id: string;
+}
+
 // Интерфейс для всего ответа API
 export interface ApiResponse {
   nodes: GraphNode[];
   links: GraphLink[];
+  network_to_network: NetworkToNetwork[];
 }
 
 export const fetchGraphData = async (

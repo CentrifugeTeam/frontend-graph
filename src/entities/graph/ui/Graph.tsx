@@ -160,6 +160,13 @@ const Graph = () => {
               }))
             )
           ) ?? []),
+
+        ...(data?.network_to_network?.map((link) => ({
+          source: `network-${link.source_id}`,
+          target: `network-${link.target_id}`,
+          color: "#a020f0",
+          width: 2,
+        })) ?? []),
       ],
     }),
     [data, selectedHostId, getLinkColorByPackets]
@@ -298,10 +305,24 @@ const Graph = () => {
           nodeCanvasObject={(node: any, ctx, globalScale) => {
             if (node.x === undefined || node.y === undefined) return;
 
+            const radius = 5;
+
+            // Устанавливаем параметры тени
+            ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; // цвет тени
+            ctx.shadowBlur = 5; // степень размытия
+            ctx.shadowOffsetX = 2; // смещение по X
+            ctx.shadowOffsetY = 2; // смещение по Y
+
             ctx.beginPath();
-            ctx.arc(node.x, node.y, 5, 0, 2 * Math.PI, false);
+            ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI, false);
             ctx.fillStyle = getNodeColor(node);
             ctx.fill();
+
+            // Очищаем тень после отрисовки (чтобы не повлияла на другие элементы)
+            ctx.shadowColor = "transparent";
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
 
             if (globalScale >= 1.5) {
               const label = node.display_name || node.name;
@@ -310,7 +331,7 @@ const Graph = () => {
               ctx.textAlign = "center";
               ctx.textBaseline = "top";
               ctx.fillStyle = "#000000";
-              ctx.fillText(label, node.x, node.y + 8);
+              ctx.fillText(label, node.x, node.y + radius + 3);
             }
           }}
           nodePointerAreaPaint={(node: any, color, ctx) => {
