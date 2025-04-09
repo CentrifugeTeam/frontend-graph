@@ -19,6 +19,7 @@
     "delete": "Delete",
     "name": "Name",
     "status": "Status",
-    "image": "Image"
+    "image": "Image",
+    "search": "Search"
   }
 }

@@ -360,7 +360,7 @@ const Graph = () => {
           >
             {selectedNode?.type === "container" && (
               <Button
-                label="Удалить"
+                label={t("content.delete")}
                 severity="danger"
                 onClick={async () => {
                   try {

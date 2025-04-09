@@ -7,44 +7,48 @@ import { ScrollPanel } from "primereact/scrollpanel";
 import { fetchHosts } from "../api/fetchHosts";
 import { setLoading, setSelectedHostId } from "../model/hostsSlice";
 
-export const Hosts = () => {
+interface HostsProps {
+  searchValue: string;
+}
+
+export const Hosts = ({ searchValue }: HostsProps) => {
   const dispatch = useDispatch();
-  const [nodes, setNodes] = useState<TreeNode[]>([]); // Локальное состояние для узлов
-  const [loading, setLoadingLocal] = useState(true); // Локальный флаг загрузки
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
+  const [loading, setLoadingLocal] = useState(true);
 
   useEffect(() => {
     const loadHosts = async () => {
       try {
-        dispatch(setLoading(true)); // Устанавливаем флаг загрузки в Redux
+        dispatch(setLoading(true));
         const hostsData = await fetchHosts();
         const formattedNodes = hostsData.map((host: any) => ({
           key: host.id,
           label: host.hostname,
           data: { ip: host.ip },
-          selectable: true, // Разрешаем выбор только для хостов
+          selectable: true,
         }));
-        setNodes(formattedNodes); // Сохраняем узлы локально
+        setNodes(formattedNodes);
       } catch (error) {
         console.error("Error loading hosts:", error);
       } finally {
         setLoadingLocal(false);
-        dispatch(setLoading(false)); // Снимаем флаг загрузки в Redux
+        dispatch(setLoading(false));
       }
     };
 
     loadHosts();
   }, [dispatch]);
 
-  if (loading) {
-    return <div></div>;
-  }
+  if (loading) return <div />;
 
-  // Обработчик выбора узла
   const handleNodeSelect = (node: TreeNode) => {
-    // Сохраняем только ID хоста
     const hostId = node.key?.toString() || null;
     dispatch(setSelectedHostId(hostId));
   };
+
+  const filteredNodes = nodes.filter((node) =>
+    node.label?.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   return (
     <div
@@ -57,23 +61,26 @@ export const Hosts = () => {
         marginTop: "20px",
       }}
     >
-      <ScrollPanel
-        style={{
-          width: "100%",
-          height: "100%",
-          flex: 1,
-        }}
-      >
+      <ScrollPanel style={{ width: "100%", height: "100%", flex: 1 }}>
         <Tree
-          value={nodes}
+          value={filteredNodes}
           nodeTemplate={(node) => (
-            <span title={node.data?.ip}>{node.label}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <i
+                className="pi pi-angle-right"
+                style={{
+                  fontSize: "12px",
+                  color: "#999",
+                }}
+              />
+              <span title={node.data?.ip}>{node.label}</span>
+            </div>
           )}
-          selectionMode="single" // Разрешаем выбор одного элемента
-          onSelect={(e) => handleNodeSelect(e.node as TreeNode)} // Обработчик выбора
+          selectionMode="single"
+          onSelect={(e) => handleNodeSelect(e.node as TreeNode)}
           style={{
             border: "none",
-            fontSize: "10px",
+            fontSize: "12px",
             padding: "0",
             boxSizing: "border-box",
             width: "100%",

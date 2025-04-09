@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Logo from "@/shared/assets/Logo";
 import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext"; // ✅ Добавляем импорт
 import styled from "styled-components";
 import { Hosts } from "@/entities/hosts/ui/Hosts";
 import LangToggle from "@/entities/lang/ui/LangToggle";
+import { useTranslation } from "react-i18next";
 
 const Container = styled.div<{ $collapsed: boolean }>`
   z-index: 1000;
@@ -55,9 +57,16 @@ const StyledButton = styled(Button)<{ $isSelected?: boolean }>`
   }
 `;
 
+const SearchInputWrapper = styled.div`
+  margin-top: 15px;
+  width: 100%;
+`;
+
 export const Bar = () => {
   const [selectedButton, setSelectedButton] = useState<string | null>("bars");
   const [collapsed, setCollapsed] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const { t } = useTranslation();
 
   const handleButtonClick = (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -110,7 +119,20 @@ export const Bar = () => {
         )}
         <LangToggle />
       </ButtonContainer>
-      {!collapsed && <Hosts />}
+
+      {/* Поле ввода для поиска */}
+      {!collapsed && selectedButton === "search" && (
+        <SearchInputWrapper>
+          <InputText
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder={t("content.search")}
+            style={{ width: "100%" }}
+          />
+        </SearchInputWrapper>
+      )}
+
+      {!collapsed && <Hosts searchValue={searchValue} />}
     </Container>
   );
 };
