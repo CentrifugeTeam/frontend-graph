@@ -21,12 +21,15 @@ export const Hosts = ({ searchValue }: HostsProps) => {
       try {
         dispatch(setLoading(true));
         const hostsData = await fetchHosts();
-        const formattedNodes = hostsData.map((host: any) => ({
-          key: host.id,
-          label: host.hostname,
-          data: { ip: host.ip },
-          selectable: true,
-        }));
+        const formattedNodes = hostsData.map((host: any) => {
+          const label = host.display_name || host.hostname; // display_name если есть, иначе hostname
+          return {
+            key: host.id,
+            label,
+            data: { ip: host.ip },
+            selectable: true,
+          };
+        });
         setNodes(formattedNodes);
       } catch (error) {
         console.error("Error loading hosts:", error);
@@ -68,10 +71,7 @@ export const Hosts = ({ searchValue }: HostsProps) => {
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <i
                 className="pi pi-angle-right"
-                style={{
-                  fontSize: "12px",
-                  color: "#999",
-                }}
+                style={{ fontSize: "12px", color: "#999" }}
               />
               <span title={node.data?.ip}>{node.label}</span>
             </div>

@@ -11,6 +11,7 @@ export interface HostNetwork {
 // Интерфейс для хоста
 export interface Host {
   hostname: string; // Имя хоста
+  display_name: string;
   ip: string; // IP-адрес хоста
   id: string; // Уникальный ID хоста
   networks: HostNetwork[]; // Массив сетевых интерфейсов
